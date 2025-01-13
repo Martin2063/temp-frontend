@@ -1,0 +1,7 @@
+.surface {
+    background-color:var(--md-sys-color-surface);
+    color:var(--md-sys-color-on-surface);
+    position:relative;
+    padding:1rem;
+    border-radius:1rem
+  }
