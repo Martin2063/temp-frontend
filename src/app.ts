@@ -21,7 +21,7 @@ let About = {
   },
 };
 
-m.route(app, "/home", {
-  "/home": LoginView,
-  "/about": About,
+m.route(app, "/ClimPi", {
+  "/ClimPi": LoginView,
+  "/ClimPi/Dashboard": About,
 });

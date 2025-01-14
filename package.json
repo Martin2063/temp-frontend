@@ -7,14 +7,17 @@
     "start": "tsc && parcel public/index.html --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "static": [
+    "public/icons"
+  ],
   "author": "ML",
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "@material/material-color-utilities": "^0.2.7",
     "@material/web": "^2.2.0",
     "mithril": "^2.2.12",
-    "typescript": "^5.7.3",
-    "@material/material-color-utilities": "^0.2.7"
+    "typescript": "^5.7.3"
   },
   "devDependencies": {
     "@types/mithril": "^2.2.7",

@@ -4,4 +4,10 @@
     position:relative;
     padding:1rem;
     border-radius:1rem
-  }
+}
+
+body {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  overflow-y: auto;
+}
