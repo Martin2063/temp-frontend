@@ -36,8 +36,8 @@ export class LoginView implements m.ClassComponent<LoginViewAttrs> {
   private user: string = "";
   private password: string = "";
   private showPW: boolean = false;
-  private pwError: boolean = false;
-  private userError: boolean = false;
+  private loginError: boolean = false;
+  private errorText: string = "Benutzername oder Passwort stimmen nicht.";
   view(vnode: m.Vnode<LoginViewAttrs, this>): m.Children | null | void {
     return m(
       ".cp-login",
@@ -52,11 +52,9 @@ export class LoginView implements m.ClassComponent<LoginViewAttrs> {
         {
           style: {
             maxWidth: "400px",
-            // padding: "1.5rem",
           },
           elevation: 2,
           surfaceColorRole: "highest",
-          // backgroundColor: "var(--md-sys-color-surface)",
         },
         m(
           ".Logo",
@@ -98,11 +96,11 @@ export class LoginView implements m.ClassComponent<LoginViewAttrs> {
           trailingicon: "person",
           value: this.user,
           oninput: (ev: any) => {
-            this.userError = false;
+            this.loginError = false;
             this.user = ev.target.value;
           },
-          error: this.userError,
-          errorText: "Der Benutzer ist uns nicht bekannt!",
+          error: this.loginError,
+          errorText: this.errorText,
         }),
         m(OutlinedTextField, {
           style: {
@@ -117,11 +115,11 @@ export class LoginView implements m.ClassComponent<LoginViewAttrs> {
           value: this.password,
           type: this.showPW ? "text" : "password",
           oninput: (ev: any) => {
-            this.pwError = false;
+            this.loginError = false;
             this.password = ev.target.value;
           },
-          error: this.pwError,
-          errorText: "Das eingegebene Password ist nicht korrekt",
+          error: this.loginError,
+          errorText: this.errorText,
         }),
         m(
           ".middle-button",
@@ -137,11 +135,11 @@ export class LoginView implements m.ClassComponent<LoginViewAttrs> {
                   sessionStorage.setItem("session", "true");
                   m.route.set("/ClimPi/Dashboard");
                 } else {
-                  this.pwError = true;
+                  this.loginError = true;
                   m.redraw();
                 }
               } else {
-                this.userError = true;
+                this.loginError = true;
                 m.redraw();
               }
               // m.route.set("/about");

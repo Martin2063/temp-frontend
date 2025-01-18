@@ -4,6 +4,7 @@ import {
   applyColorThemeFromPrimaryColor,
   getActualMaterialColors,
 } from "./utils";
+import { Dashboard } from "./dashboard";
 // js/app.js
 
 let dark =
@@ -22,6 +23,8 @@ let About = {
 };
 
 m.route(app, "/ClimPi", {
-  "/ClimPi": LoginView,
-  "/ClimPi/Dashboard": About,
+  // TUWU change back to Login start when finished
+  // "/ClimPi": LoginView,
+  // "/ClimPi/Dashboard": Dashboard,
+  "/ClimPi": Dashboard,
 });
