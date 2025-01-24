@@ -1,5 +1,6 @@
 import { BigLabelButton } from "./biglabelbutton";
-import { FilledNumberButton, FilledTonalButton } from "./button";
+import { Fab, FilledNumberButton, FilledTonalButton } from "./button";
+import { DygraphDiv, DynamicGraph } from "./dygraphs";
 import { Elevation } from "./elevation/index";
 import { FanFace } from "./fanface";
 import { SensorFace } from "./sensorface";
@@ -15,4 +16,7 @@ export {
   FanFace,
   FilledNumberButton,
   BigLabelButton,
+  DygraphDiv,
+  DynamicGraph,
+  Fab,
 };

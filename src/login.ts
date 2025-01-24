@@ -4,6 +4,8 @@ import {
   OutlinedTextField,
   Surface,
 } from "./components/index";
+import { Navigation } from "./nav";
+import { nav } from "./app";
 
 async function hasch(password: string) {
   const encoder = new TextEncoder();
@@ -133,6 +135,7 @@ export class LoginView implements m.ClassComponent<LoginViewAttrs> {
               if (auth[this.user] !== undefined) {
                 if (pHaschW === checkPW) {
                   sessionStorage.setItem("session", "true");
+                  m.mount(nav, Navigation);
                   m.route.set("/ClimPi/Dashboard");
                 } else {
                   this.loginError = true;

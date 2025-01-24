@@ -5,6 +5,7 @@ import {
   getActualMaterialColors,
 } from "./utils";
 import { Dashboard } from "./dashboard";
+import { Navigation } from "./nav";
 // js/app.js
 
 let dark =
@@ -12,19 +13,11 @@ let dark =
   window.matchMedia("(prefers-color-scheme: dark)").matches;
 applyColorThemeFromPrimaryColor(getActualMaterialColors("primary"), dark);
 const app = document.getElementById("app")!;
-
-let About = {
-  view: function () {
-    return m("div", [
-      m("h1", "Über Uns"),
-      m("p", "Dies ist eine Beispielseite."),
-    ]);
-  },
-};
+export const nav = document.getElementById("nav")!;
 
 m.route(app, "/ClimPi", {
   // TUWU change back to Login start when finished
-  // "/ClimPi": LoginView,
-  // "/ClimPi/Dashboard": Dashboard,
-  "/ClimPi": Dashboard,
+  "/ClimPi": LoginView,
+  "/ClimPi/Dashboard": Dashboard,
+  // "/ClimPi": Dashboard,
 });
