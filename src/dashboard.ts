@@ -58,7 +58,12 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
     // console.log(formattedData);
     return m(
       ".cp-dashboard",
-      {},
+      {
+        style: {
+          display: "flex",
+          justifyContent: "center",
+        },
+      },
       m(
         Surface,
         {
@@ -106,13 +111,13 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
             },
           },
           m(SensorFace, {
-            label: "Backdoor Sensor",
+            label: "Sensor 1",
             onlineSince: new Date("2024-12-12"),
             temp: this.currentTemp,
             warnings: 3,
           }),
           m(FanFace, {
-            label: "Zero DB Cooling",
+            label: "Zero DB Cooling 1",
             onlineSince: new Date("2024-12-8"),
             rpm: 2250,
             warnings: 0,

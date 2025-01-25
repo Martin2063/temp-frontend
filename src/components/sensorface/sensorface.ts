@@ -1,11 +1,12 @@
 import m from "mithril";
-import { Surface } from "../surface";
+import { Surface, SurfaceColorRole } from "../surface";
 
 interface SensorFaceAttrs {
   label: string;
   onlineSince: Date;
   temp: number;
   warnings: number;
+  colorRole?: SurfaceColorRole;
 }
 
 export class SensorFace implements m.ClassComponent<SensorFaceAttrs> {
@@ -15,10 +16,10 @@ export class SensorFace implements m.ClassComponent<SensorFaceAttrs> {
   }
 
   view({
-    attrs: { label, onlineSince, temp, warnings },
+    attrs: { label, onlineSince, temp, warnings, colorRole },
   }: m.Vnode<SensorFaceAttrs, this>): m.Children | null | void {
     return m(
-      "cp-sensor",
+      ".cp-sensor",
       {},
       m(
         Surface,
@@ -28,7 +29,7 @@ export class SensorFace implements m.ClassComponent<SensorFaceAttrs> {
             maxWidth: "160px",
           },
           elevation: 2,
-          surfaceColorRole: "low",
+          surfaceColorRole: colorRole ? colorRole : "low",
         },
         m(
           ".text-lines",
@@ -82,7 +83,7 @@ export class SensorFace implements m.ClassComponent<SensorFaceAttrs> {
               },
             },
             m("div", { style: { textWrap: "nowrap" } }, "Temperatur"),
-            m("div", { style: { textWrap: "nowrap" } }, `${temp}° Grad`)
+            m("div", { style: { textWrap: "nowrap" } }, `${temp}°`)
           ),
           m(
             ".warnings",

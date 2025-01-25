@@ -5,7 +5,9 @@ import {
   getActualMaterialColors,
 } from "./utils";
 import { Dashboard } from "./dashboard";
-import { Navigation } from "./nav";
+import { SensorView } from "./sensors";
+import { FanView } from "./fans";
+import { MessageView } from "./message";
 // js/app.js
 
 let dark =
@@ -13,11 +15,20 @@ let dark =
   window.matchMedia("(prefers-color-scheme: dark)").matches;
 applyColorThemeFromPrimaryColor(getActualMaterialColors("primary"), dark);
 const app = document.getElementById("app")!;
-export const nav = document.getElementById("nav")!;
-
+export const nav = document.getElementById("leftbar")!;
+const Placeholder = {
+  view: function () {
+    return m("div", { style: { textAlign: "center" } }, "Hallo Welt");
+  },
+};
 m.route(app, "/ClimPi", {
   // TUWU change back to Login start when finished
   "/ClimPi": LoginView,
   "/ClimPi/Dashboard": Dashboard,
+  "/ClimPi/Sensoren": SensorView,
+  "/ClimPi/NurFans": FanView,
+  "/ClimPi/Meldungen": MessageView,
+  "/ClimPi/Historie": Placeholder,
+  "/ClimPi/Einstellungen": Placeholder,
   // "/ClimPi": Dashboard,
 });

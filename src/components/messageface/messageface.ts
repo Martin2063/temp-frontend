@@ -1,25 +1,19 @@
 import m from "mithril";
 import { Surface, SurfaceColorRole } from "../surface";
 
-interface FanFaceAttrs {
-  label: string;
-  onlineSince: Date;
-  rpm: number;
-  warnings: number;
+interface MessageFaceAttrs {
+  vom: Date;
+  device: string;
+  message: string;
   colorRole?: SurfaceColorRole;
 }
 
-export class FanFace implements m.ClassComponent<FanFaceAttrs> {
-  calcDays(onlineSince: Date): string {
-    let milliTimeDif = new Date(Date.now()).getTime() - onlineSince.getTime();
-    return `${Math.round(milliTimeDif / 1000 / 60 / 60 / 24)} Tage`;
-  }
-
+export class MessageFace implements m.ClassComponent<MessageFaceAttrs> {
   view({
-    attrs: { label, onlineSince, rpm, warnings, colorRole },
-  }: m.Vnode<FanFaceAttrs, this>): m.Children | null | void {
+    attrs: { vom, device, message, colorRole },
+  }: m.Vnode<MessageFaceAttrs, this>): m.Children | null | void {
     return m(
-      ".cp-fan",
+      ".cp-message-face",
       {},
       m(
         Surface,
@@ -42,7 +36,7 @@ export class FanFace implements m.ClassComponent<FanFaceAttrs> {
             },
           },
           m(
-            ".label",
+            ".from",
             {
               style: {
                 display: "flex",
@@ -53,12 +47,12 @@ export class FanFace implements m.ClassComponent<FanFaceAttrs> {
             m(
               "div",
               { style: { textWrap: "nowrap", marginRight: "1rem" } },
-              "Fan"
+              "Vom"
             ),
-            m("div", { style: { textWrap: "nowrap" } }, label)
+            m("div", { style: { textWrap: "nowrap" } }, `${vom.getDate()}`)
           ),
           m(
-            ".uptime",
+            ".device-line",
             {
               style: {
                 display: "flex",
@@ -66,15 +60,11 @@ export class FanFace implements m.ClassComponent<FanFaceAttrs> {
                 marginBottom: "1rem",
               },
             },
-            m("div", { style: { textWrap: "nowrap" } }, "Online"),
-            m(
-              "div",
-              { style: { textWrap: "nowrap" } },
-              this.calcDays(onlineSince)
-            )
+            m("div", { style: { textWrap: "nowrap" } }, "Gerät"),
+            m("div", { style: { textWrap: "nowrap" } }, device)
           ),
           m(
-            ".rpm",
+            ".message-line",
             {
               style: {
                 display: "flex",
@@ -82,20 +72,8 @@ export class FanFace implements m.ClassComponent<FanFaceAttrs> {
                 marginBottom: "1rem",
               },
             },
-            m("div", { style: { textWrap: "nowrap" } }, "RPM"),
-            m("div", { style: { textWrap: "nowrap" } }, `${rpm}`)
-          ),
-          m(
-            ".warnings",
-            {
-              style: {
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "1rem",
-              },
-            },
-            m("div", { style: { textWrap: "nowrap" } }, "Meldungen"),
-            m("div", { style: { textWrap: "nowrap" } }, warnings)
+            m("div", { style: { textWrap: "nowrap" } }, "Meldung"),
+            m("div", { style: { textWrap: "nowrap" } }, message)
           )
         )
       )
