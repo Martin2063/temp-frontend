@@ -18,7 +18,8 @@ export class Navigation implements m.ClassComponent<NavigationAttrs> {
         id: "climpi-logo-small",
         src: "icons/logo.png",
         style: {
-          scale: "2.3",
+          scale: "1.9",
+          marginTop: "4px",
         },
       }),
       action: () => {

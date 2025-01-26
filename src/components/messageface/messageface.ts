@@ -19,8 +19,8 @@ export class MessageFace implements m.ClassComponent<MessageFaceAttrs> {
         Surface,
         {
           style: {
-            width: "160px",
-            maxWidth: "160px",
+            width: "320px",
+            maxWidth: "320px",
           },
           elevation: 2,
           surfaceColorRole: colorRole ? colorRole : "low",
@@ -49,7 +49,11 @@ export class MessageFace implements m.ClassComponent<MessageFaceAttrs> {
               { style: { textWrap: "nowrap", marginRight: "1rem" } },
               "Vom"
             ),
-            m("div", { style: { textWrap: "nowrap" } }, `${vom.getDate()}`)
+            m(
+              "div",
+              { style: { textWrap: "nowrap" } },
+              vom.toLocaleDateString()
+            )
           ),
           m(
             ".device-line",

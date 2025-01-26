@@ -16,13 +16,7 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
   private currentTemp: number = 0;
   private tempIntervall?: any;
   private graph: Dygraph = null!;
-  private formattedData = temperaturDaten.map((row) => {
-    return [
-      new Date(Date.now()),
-      row[1],
-      // row[2],
-    ];
-  });
+  private formattedData = [[new Date(Date.now()), 30]];
   oninit(vnode: m.Vnode<DashboardAttrs, this>) {
     let getTemp = () => {
       let tempTemp = Math.random() * 100;
@@ -133,11 +127,11 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
           },
           m(BigLabelButton, {
             label: "Sensoren",
-            value: 1,
+            value: 10,
           }),
           m(BigLabelButton, {
             label: "Fans",
-            value: 1,
+            value: 10,
           }),
           m(BigLabelButton, {
             label: "Meldungen",
@@ -168,39 +162,6 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
   }
 }
 
-const temperaturDaten = [
-  ["21.12.2024", 7, -2],
-  // ["22.12.2024", 5, -1],
-  // ["23.12.2024", 6, -2],
-  // ["24.12.2024", 8, 0],
-  // ["25.12.2024", 9, 1],
-  // ["26.12.2024", 7, -1],
-  // ["27.12.2024", 6, -3],
-  // ["28.12.2024", 5, -2],
-  // ["29.12.2024", 4, -4],
-  // ["30.12.2024", 6, -2],
-  // ["31.12.2024", 7, 0],
-  // ["01.01.2025", 8, 1],
-  // ["02.01.2025", 7, -1],
-  // ["03.01.2025", 6, -2],
-  // ["04.01.2025", 5, -3],
-  // ["05.01.2025", 7, 0],
-  // ["06.01.2025", 8, 1],
-  // ["07.01.2025", 7, -1],
-  // ["08.01.2025", 6, -2],
-  // ["09.01.2025", 5, -3],
-  // ["10.01.2025", 7, 0],
-  // ["11.01.2025", 8, 1],
-  // ["12.01.2025", 7, -1],
-  // ["13.01.2025", 6, -2],
-  // ["14.01.2025", 5, -3],
-  // ["15.01.2025", 7, 0],
-  // ["16.01.2025", 8, 1],
-  // ["17.01.2025", 7, -1],
-  // ["18.01.2025", 6, -2],
-  // ["19.01.2025", 5, -3],
-  // ["20.01.2025", 7, 0],
-];
 // const formattedData = temperaturDaten.map((row) => {
 //   return [
 //     new Date((row[0] as string).split(".").reverse().join("-")),

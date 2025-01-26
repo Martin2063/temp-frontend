@@ -14,17 +14,17 @@ export class MessageView implements m.ClassComponent<MessageViewAttrs> {
 
   oninit(vnode: m.Vnode<MessageViewAttrs, this>) {
     this.messages.push({
-      vom: new Date("3.1.2025"),
+      vom: new Date("1.3.2025"),
       device: "Sensor 1",
       message: "Temperatur über 80°",
     });
     this.messages.push({
-      vom: new Date("8.1.2025"),
+      vom: new Date("1.8.2025"),
       device: "Sensor 3",
       message: "Temperatur über 80°",
     });
     this.messages.push({
-      vom: new Date("20.1.2025"),
+      vom: new Date("1.20.2025"),
       device: "Sensor 1",
       message: "Temperatur über 80°",
     });
