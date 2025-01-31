@@ -25,17 +25,18 @@ const Placeholder = {
     return m("div", { style: { textAlign: "center" } }, "Hallo Welt");
   },
 };
-if (sessionStorage.getItem("session")) {
+let session: boolean =
+  sessionStorage.getItem("session") === "true" ? true : false;
+console.log(session);
+if (session) {
   m.mount(nav, Navigation);
 }
 m.route(app, "/ClimPi", {
-  // TUWU change back to Login start when finished
-  "/ClimPi": LoginView,
-  "/ClimPi/Dashboard": Dashboard,
-  "/ClimPi/Sensoren": SensorView,
-  "/ClimPi/NurFans": FanView,
-  "/ClimPi/Meldungen": MessageView,
-  "/ClimPi/Historie": HistorieView,
-  "/ClimPi/Einstellungen": ThemeView,
-  // "/ClimPi": Dashboard,
+  "/ClimPi": session ? Dashboard : LoginView,
+  "/ClimPi/Dashboard": session ? Dashboard : LoginView,
+  "/ClimPi/Sensoren": session ? SensorView : LoginView,
+  "/ClimPi/NurFans": session ? FanView : LoginView,
+  "/ClimPi/Meldungen": session ? MessageView : LoginView,
+  "/ClimPi/Historie": session ? HistorieView : LoginView,
+  "/ClimPi/Einstellungen": session ? ThemeView : LoginView,
 });
