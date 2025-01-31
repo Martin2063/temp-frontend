@@ -10,6 +10,27 @@ interface HistorieViewAttrs {}
 
 export class HistorieView implements m.ClassComponent<HistorieViewAttrs> {
   private selectedSegment: SegmentOptions = "day";
+  async oninit(vnode: m.Vnode<HistorieViewAttrs, this>) {
+    let path = window.location.href;
+    let requestoptions: RequestInit = {
+      method: "post",
+    };
+    let days = 30;
+    let simulate = false;
+    let dateStat: number = Date.now();
+    let response = await fetch(
+      `http://${
+        path.split("/")[2].split(":")[0]
+      }:5000/api/chart/get?days=${4}&simulate=True`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    console.log(await response.json());
+    let dateEnd = Date.now();
+    console.log((dateEnd - dateStat) / 1000);
+  }
   view(vnode: m.Vnode<HistorieViewAttrs, this>): m.Children | null | void {
     return m(
       ".cp-history-view",

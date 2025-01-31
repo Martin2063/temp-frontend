@@ -10,25 +10,25 @@ import {
 import Dygraph from "dygraphs";
 
 interface DashboardAttrs {}
-
+type TimeTemp = {
+  time: number;
+  temp: number;
+};
 export class Dashboard implements m.ClassComponent<DashboardAttrs> {
   // private data: string | number | Date[][] = [];
   private currentTemp: number = 0;
   private tempIntervall?: any;
   private graph: Dygraph = null!;
-  private formattedData = [[new Date(Date.now()), 30]];
-  oninit(vnode: m.Vnode<DashboardAttrs, this>) {
-    let getTemp = () => {
-      let tempTemp = Math.random() * 100;
-      tempTemp = Math.ceil(tempTemp * 100) / 100;
-      this.currentTemp = tempTemp;
-      this.formattedData.push([new Date(Date.now()), tempTemp]);
-      console.log(
-        "werte etc",
-        this.formattedData[this.formattedData.length - 1],
-        "<<<>>>",
-        this.graph
+  private formattedData: [Date, number][] = [];
+  async oninit(vnode: m.Vnode<DashboardAttrs, this>) {
+    let getTemp = async () => {
+      let path = window.location.href;
+      let response = await fetch(
+        `http://${path.split("/")[2].split(":")[0]}:5000/api/temp/get`
       );
+      let { timestamp, value } = await response.json();
+      this.currentTemp = value;
+      this.formattedData.push([new Date(timestamp), this.currentTemp]);
       this.getGraph()?.updateOptions({
         file: this.formattedData as any,
       });
@@ -161,11 +161,3 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
     );
   }
 }
-
-// const formattedData = temperaturDaten.map((row) => {
-//   return [
-//     new Date((row[0] as string).split(".").reverse().join("-")),
-//     row[1],
-//     // row[2],
-//   ];
-// });
