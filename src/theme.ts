@@ -11,7 +11,12 @@ export class ThemeView implements m.ClassComponent<ThemeViewAttrs> {
   setColor(color: string, dark: boolean) {
     applyColorThemeFromPrimaryColor(color, dark);
   }
-
+  oninit(vnode: m.Vnode<ThemeViewAttrs, this>) {
+    let session = sessionStorage.getItem("session");
+    if (!session) {
+      m.route.set("/ClimPi");
+    }
+  }
   view(vnode: m.Vnode<ThemeViewAttrs, this>): void | m.Children {
     let mainColor: string = null!;
     let darkMode: boolean = undefined!;

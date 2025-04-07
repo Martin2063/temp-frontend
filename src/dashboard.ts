@@ -1,7 +1,6 @@
 import m from "mithril";
 import {
   BigLabelButton,
-  DygraphDiv,
   DynamicGraph,
   FanFace,
   SensorFace,
@@ -15,28 +14,51 @@ type TimeTemp = {
   temp: number;
 };
 export class Dashboard implements m.ClassComponent<DashboardAttrs> {
-  // private data: string | number | Date[][] = [];
+  private tempTarget: number = 25;
+  private maxRPM: number = 3700;
+  private currentRPM: number = 0;
   private currentTemp: number = 0;
   private tempIntervall?: any;
   private graph: Dygraph = null!;
   private formattedData: [Date, number][] = [];
   async oninit(vnode: m.Vnode<DashboardAttrs, this>) {
-    let getTemp = async () => {
-      let path = window.location.href;
-      let response = await fetch(
-        `http://${path.split("/")[2].split(":")[0]}:5000/api/temp/get`
-      );
-      let { timestamp, value } = await response.json();
-      this.currentTemp = value;
-      this.formattedData.push([new Date(timestamp), this.currentTemp]);
-      this.getGraph()?.updateOptions({
-        file: this.formattedData as any,
-      });
-      m.redraw();
-    };
-    this.tempIntervall = setInterval(getTemp, 1000);
+    let session = sessionStorage.getItem("session");
+    if (!session) {
+      m.route.set("/ClimPi");
+    } else {
+      let getTemp = async () => {
+        let path = window.location.href;
+        let response = await fetch(
+          `http://${path.split("/")[2].split(":")[0]}:5000/api/temp/get`
+        );
+        let { timestamp, value } = await response.json();
+        if (timestamp === undefined) {
+          timestamp = Date.now() / 1000;
+          value = 30;
+        }
+        this.currentTemp = value;
+        if (this.currentTemp <= this.tempTarget) {
+          this.currentRPM = 0;
+        } else {
+          let diff = this.currentTemp - this.tempTarget;
+          let speed = Math.min(10 + diff * 10 + diff ** 1.8 * 3, 100);
+          if (speed < 10) {
+            speed = 10;
+          }
+          this.currentRPM = Math.round((this.maxRPM / 100) * speed);
+        }
+        this.formattedData.push([new Date(timestamp * 1000), this.currentTemp]);
+        if (this.formattedData.length > 30) {
+          this.formattedData.shift();
+        }
+        this.getGraph()?.updateOptions({
+          file: this.formattedData as any,
+        });
+        m.redraw();
+      };
+      this.tempIntervall = setInterval(getTemp, 1000);
+    }
   }
-
   getGraph(): Dygraph | undefined {
     return this.graph;
   }
@@ -49,7 +71,6 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
     }
   }
   view(vnode: m.Vnode<DashboardAttrs, this>): m.Children | null | void {
-    // console.log(formattedData);
     return m(
       ".cp-dashboard",
       {
@@ -113,7 +134,7 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
           m(FanFace, {
             label: "Zero DB Cooling 1",
             onlineSince: new Date("2024-12-8"),
-            rpm: 2250,
+            rpm: this.currentRPM,
             warnings: 0,
           })
         ),

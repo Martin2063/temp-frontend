@@ -12,6 +12,9 @@ export function applySurfaceStyles(
 ): void {
   if (dark) {
     const elevationProps = {
+      "--md-sys-color-surface": dark
+        ? theme.palettes.neutral.tone(13)
+        : theme.palettes.neutral.tone(10),
       "--md-sys-color-surface-dim": theme.palettes.neutral.tone(6),
       "--md-sys-color-surface-bright": theme.palettes.neutral.tone(24),
       "--md-sys-color-surface-container-lowest": theme.palettes.neutral.tone(4),

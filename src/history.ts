@@ -17,18 +17,24 @@ export class HistorieView implements m.ClassComponent<HistorieViewAttrs> {
   private monthData: any = null;
   private dayData: any = null;
   async oninit(vnode: m.Vnode<HistorieViewAttrs, this>) {
-    let path = window.location.href;
-    let days = 30;
-    let response = await fetch(
-      `http://${
-        path.split("/")[2].split(":")[0]
-      }:5000/api/chart/get?days=${days}`
-    );
-    let data: any[] = await response.json();
-    this.monthData = dailyMaxMinTemperatures(data);
-    this.dayData = hourlyMaxMinTemperatures(data);
-    this.calcDone = true;
-    m.redraw();
+    let session = sessionStorage.getItem("session");
+    if (!session) {
+      m.route.set("/ClimPi");
+    } else {
+      let path = window.location.href;
+      let days = 30;
+      let response = await fetch(
+        `http://${
+          path.split("/")[2].split(":")[0]
+        }:5000/api/chart/get?days=${days}`
+      );
+      let data: any[] = await response.json();
+      console.log(data);
+      this.monthData = getDailyMinMax(data);
+      this.dayData = getLast24Hours(data);
+      this.calcDone = true;
+      m.redraw();
+    }
   }
   view(vnode: m.Vnode<HistorieViewAttrs, this>): m.Children | null | void {
     return m(
@@ -137,141 +143,65 @@ export class HistorieView implements m.ClassComponent<HistorieViewAttrs> {
     );
   }
 }
-interface TemperatureData {
+interface DataEntry {
+  maxValue: number;
+  minValue: number;
   timestamp: number;
-  value: number;
 }
 
-function dailyMaxMinTemperatures(
-  data: TemperatureData[]
-): [Date, number, number][] {
-  const dailyTemps: Record<string, number[]> = {};
+interface DailyData {
+  minValue: number;
+  maxValue: number;
+}
 
-  data.forEach((da: TemperatureData) => {
-    const date = new Date(da.timestamp * 1000).toISOString().split("T")[0];
-    if (!dailyTemps[date]) {
-      dailyTemps[date] = [];
+function getDailyMinMax(data: DataEntry[]): [Date, number, number][] {
+  let dailyData: { [date: string]: DailyData } = {};
+
+  data.forEach((entry) => {
+    let date = new Date(entry.timestamp * 1000).toISOString().split("T")[0];
+    if (!dailyData[date]) {
+      dailyData[date] = { minValue: entry.minValue, maxValue: entry.maxValue };
+    } else {
+      dailyData[date].minValue = Math.min(
+        dailyData[date].minValue,
+        entry.minValue
+      );
+      dailyData[date].maxValue = Math.max(
+        dailyData[date].maxValue,
+        entry.maxValue
+      );
     }
-    dailyTemps[date].push(da.value);
   });
 
-  const dygraphData: [Date, number, number][] = [];
-  for (const date in dailyTemps) {
-    const temps = dailyTemps[date];
-    const maxTemp = Math.max(...temps);
-    const minTemp = Math.min(...temps);
-    const formattedDate = new Date(date);
-    dygraphData.push([formattedDate, minTemp, maxTemp]);
+  let formattedData: [Date, number, number][] = [];
+
+  for (let date in dailyData) {
+    formattedData.push([
+      new Date(date),
+      dailyData[date].minValue,
+      dailyData[date].maxValue,
+    ]);
   }
 
-  return dygraphData.reverse();
+  return formattedData.reverse();
 }
+function getLast24Hours(data: DataEntry[]): [Date, number, number][] {
+  let now = Math.floor(Date.now() / 1000); // Aktuelle Zeit in Sekunden
+  let last24HoursData = data.filter((entry) => now - entry.timestamp <= 86400); // 86400 Sekunden = 24 Stunden
 
-function hourlyMaxMinTemperatures(
-  data: TemperatureData[]
-): [Date, number, number][] {
-  const now = new Date();
-  const twentyFourHoursAgo = now.getTime() - 24 * 60 * 60 * 1000;
-
-  const last24HoursTemps = data.filter(
-    (da) => da.timestamp * 1000 > twentyFourHoursAgo
-  );
-
-  const hourlyTemps: Record<string, number[]> = {};
-  last24HoursTemps.forEach(({ timestamp, value }) => {
-    const hour =
-      new Date(timestamp * 1000).toISOString().split(":")[0] + ":00:00Z"; // YYYY-MM-DDTHH
-    if (!hourlyTemps[hour]) {
-      hourlyTemps[hour] = [];
-    }
-    hourlyTemps[hour].push(value);
+  let formattedData: [Date, number, number][] = last24HoursData.map((entry) => {
+    let date = new Date(entry.timestamp * 1000).toISOString();
+    return [new Date(date), entry.minValue, entry.maxValue];
   });
 
-  const dygraphData: [Date, number, number][] = [];
-  for (const hour in hourlyTemps) {
-    const temps = hourlyTemps[hour];
-    const maxTemp = Math.max(...temps);
-    const minTemp = Math.min(...temps);
-    const formattedDate = new Date(hour);
-    dygraphData.push([formattedDate, minTemp, maxTemp]);
-  }
-
-  return dygraphData;
+  return formattedData.reverse();
 }
+
 function filterLast7Days(
   dygraphData: [Date, number, number][]
 ): [Date, number, number][] {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  return dygraphData.filter(([date]) => date >= sevenDaysAgo);
+  return dygraphData.filter(([date]) => date >= sevenDaysAgo).reverse();
 }
-// const dygraphData: [Date, number, number][] = [
-//   [new Date("2025-01-02"), 33, 68],
-//   [new Date("2025-01-03"), 44, 87],
-//   [new Date("2025-01-04"), 39, 70],
-//   [new Date("2025-01-05"), 40, 70],
-//   [new Date("2025-01-06"), 32, 63],
-//   [new Date("2025-01-07"), 30, 40],
-//   [new Date("2025-01-08"), 49, 86],
-//   [new Date("2025-01-09"), 31, 54],
-//   [new Date("2025-01-10"), 50, 63],
-//   [new Date("2025-01-11"), 21, 48],
-//   [new Date("2025-01-12"), 31, 57],
-//   [new Date("2025-01-13"), 28, 69],
-//   [new Date("2025-01-14"), 39, 53],
-//   [new Date("2025-01-15"), 50, 79],
-//   [new Date("2025-01-16"), 41, 58],
-//   [new Date("2025-01-17"), 51, 72],
-//   [new Date("2025-01-18"), 29, 66],
-//   [new Date("2025-01-19"), 36, 54],
-//   [new Date("2025-01-20"), 60, 87],
-//   [new Date("2025-01-21"), 40, 57],
-//   [new Date("2025-01-22"), 30, 47],
-//   [new Date("2025-01-23"), 24, 67],
-//   [new Date("2025-01-24"), 45, 77],
-//   [new Date("2025-01-25"), 23, 72],
-//   [new Date("2025-01-26"), 47, 75],
-//   [new Date("2025-01-27"), 30, 55],
-//   [new Date("2025-01-28"), 28, 62],
-//   [new Date("2025-01-29"), 22, 71],
-//   [new Date("2025-01-30"), 36, 78],
-//   [new Date("2025-01-31"), 18, 72],
-// ];
-
-// const dygraphDataWeek = [
-//   [new Date("2025-01-25"), 23, 72],
-//   [new Date("2025-01-26"), 47, 75],
-//   [new Date("2025-01-27"), 30, 55],
-//   [new Date("2025-01-28"), 28, 62],
-//   [new Date("2025-01-29"), 22, 71],
-//   [new Date("2025-01-30"), 36, 78],
-//   [new Date("2025-01-31"), 18, 72],
-// ];
-
-// const dygraphDataTag: [Date, number, number][] = [
-//   [new Date("2025-01-26T00:00:00"), 30, 55],
-//   [new Date("2025-01-26T01:00:00"), 32, 57],
-//   [new Date("2025-01-26T02:00:00"), 33, 59],
-//   [new Date("2025-01-26T03:00:00"), 34, 60],
-//   [new Date("2025-01-26T04:00:00"), 31, 58],
-//   [new Date("2025-01-26T05:00:00"), 29, 56],
-//   [new Date("2025-01-26T06:00:00"), 28, 54],
-//   [new Date("2025-01-26T07:00:00"), 27, 52],
-//   [new Date("2025-01-26T08:00:00"), 26, 50],
-//   [new Date("2025-01-26T09:00:00"), 25, 48],
-//   [new Date("2025-01-26T10:00:00"), 24, 46],
-//   [new Date("2025-01-26T11:00:00"), 23, 45],
-//   [new Date("2025-01-26T12:00:00"), 24, 47],
-//   [new Date("2025-01-26T13:00:00"), 25, 49],
-//   [new Date("2025-01-26T14:00:00"), 26, 51],
-//   [new Date("2025-01-26T15:00:00"), 27, 53],
-//   [new Date("2025-01-26T16:00:00"), 28, 55],
-//   [new Date("2025-01-26T17:00:00"), 29, 57],
-//   [new Date("2025-01-26T18:00:00"), 30, 59],
-//   [new Date("2025-01-26T19:00:00"), 31, 61],
-//   [new Date("2025-01-26T20:00:00"), 32, 63],
-//   [new Date("2025-01-26T21:00:00"), 33, 65],
-//   [new Date("2025-01-26T22:00:00"), 34, 67],
-//   [new Date("2025-01-26T23:00:00"), 35, 69],
-// ];

@@ -8,7 +8,6 @@ import { MessageView } from "./message";
 import { Navigation } from "./nav";
 import { ThemeView } from "./theme";
 import { HistorieView } from "./history";
-// js/app.js
 
 let dark =
   window.matchMedia &&
@@ -25,18 +24,21 @@ const Placeholder = {
     return m("div", { style: { textAlign: "center" } }, "Hallo Welt");
   },
 };
-let session: boolean =
-  sessionStorage.getItem("session") === "true" ? true : false;
-console.log(session);
-if (session) {
+
+function getSession(): boolean {
+  let session = sessionStorage.getItem("session") === "true" ? true : false;
+  return session;
+}
+
+if (getSession()) {
   m.mount(nav, Navigation);
 }
 m.route(app, "/ClimPi", {
-  "/ClimPi": session ? Dashboard : LoginView,
-  "/ClimPi/Dashboard": session ? Dashboard : LoginView,
-  "/ClimPi/Sensoren": session ? SensorView : LoginView,
-  "/ClimPi/NurFans": session ? FanView : LoginView,
-  "/ClimPi/Meldungen": session ? MessageView : LoginView,
-  "/ClimPi/Historie": session ? HistorieView : LoginView,
-  "/ClimPi/Einstellungen": session ? ThemeView : LoginView,
+  "/ClimPi": LoginView,
+  "/ClimPi/Dashboard": Dashboard,
+  "/ClimPi/Sensoren": SensorView,
+  "/ClimPi/NurFans": FanView,
+  "/ClimPi/Meldungen": MessageView,
+  "/ClimPi/Historie": HistorieView,
+  "/ClimPi/Einstellungen": ThemeView,
 });

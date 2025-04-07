@@ -15,14 +15,18 @@ export class SensorView implements m.ClassComponent<SensorViewAttrs> {
   private tempIntervall?: any;
   private currentTemp: number = 0;
 
-  oninit(vnode: m.Vnode<SensorViewAttrs, this>) {
-    let getTemp = () => {
-      let tempTemp = Math.random() * 100;
-      tempTemp = Math.ceil(tempTemp * 100) / 100;
-      this.currentTemp = tempTemp;
-      m.redraw();
-    };
-    this.tempIntervall = setInterval(getTemp, 1000);
+  async oninit(vnode: m.Vnode<SensorViewAttrs, this>) {
+    let session = sessionStorage.getItem("session");
+    if (!session) {
+      m.route.set("/ClimPi");
+    }
+    let path = window.location.href;
+    let response = await fetch(
+      `http://${path.split("/")[2].split(":")[0]}:5000/api/temp/get`
+    );
+    let { timestamp, value } = await response.json();
+    this.currentTemp = value;
+    m.redraw();
     for (let i = 1; i <= 10; i++) {
       this.sensors.push({
         label: `Sensor ${i}`,
@@ -31,6 +35,15 @@ export class SensorView implements m.ClassComponent<SensorViewAttrs> {
         warnings: 3,
       });
     }
+    let getTemp = async () => {
+      let response = await fetch(
+        `http://${path.split("/")[2].split(":")[0]}:5000/api/temp/get`
+      );
+      let { timestamp, value } = await response.json();
+      this.currentTemp = value;
+      m.redraw();
+    };
+    this.tempIntervall = setInterval(getTemp, 5000);
   }
   onremove(vnode: m.VnodeDOM<SensorViewAttrs, this>) {
     if (this.tempIntervall) {
